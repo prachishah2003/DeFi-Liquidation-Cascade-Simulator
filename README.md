@@ -596,14 +596,3 @@ conftest.py                      Lets pytest import the suites from the repo roo
 requirements.txt
 LICENSE
 ```
-
-## License
-
-Add a `LICENSE` file at the project root if you want one, the `LICENSE`
-file inside `.venv/` belongs to a bundled dependency, not this project.
-
----
-
-*Built as a master's project. Not aimed at publication, but validated
-against real market data throughout rather than left as a theoretical
-exercise.*
