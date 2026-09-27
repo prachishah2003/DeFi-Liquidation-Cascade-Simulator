@@ -1,0 +1,47 @@
+name: tests
+
+# Every test here runs with no API key and no network: the subgraph layer is
+# stubbed or replayed from a recorded snapshot. That is deliberate -- a test
+# suite that needs live blockchain data is a suite that stops running.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Byte-compile every module
+        run: python -m compileall -q .
+
+      - name: Run tests
+        run: pytest -q --tb=short
+
+      - name: Run each suite standalone
+        # The standalone runners print the numbers behind each assertion;
+        # a failure here that pytest missed means a __main__ block has
+        # drifted from the tests it is supposed to run.
+        run: |
+          for f in test_*.py; do
+            echo "=== $f"
+            python "$f" > /dev/null
+          done
